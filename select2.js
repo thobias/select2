@@ -1245,7 +1245,23 @@
                     }
                 }
 
-                if (data.results.length === 0 && checkFormatter(opts.formatNoMatches, "formatNoMatches")) {
+                var searchBox = $(this.search);
+                var box = this.opts.element;
+                
+                var triggerNoMatchesCallback = function() {
+                  box.trigger('noMatches', [searchBox.val()]);
+                };
+
+                if (data.results.length === 0 && opts.createNew && checkFormatter(opts.formatCreateNew, "formatCreateNew")) {
+                    searchBox.off('keyup.new').on('keyup.new', function(e) {
+                      if(e.which === KEY.ENTER) { triggerNoMatchesCallback(); }
+                    });
+                    render("<li class='select2-create-new'>" + opts.formatCreateNew(search.val()) + "</li>");
+                    $('.select2-create-new').off('click.new').on('click.new', triggerNoMatchesCallback);
+                    return;
+                }
+
+                if (data.results.length === 0 && !opts.createNew && checkFormatter(opts.formatNoMatches, "formatNoMatches")) {
                     render("<li class='select2-no-results'>" + opts.formatNoMatches(search.val()) + "</li>");
                     return;
                 }
@@ -2365,6 +2381,7 @@
         },
         formatResultCssClass: function(data) {return undefined;},
         formatNoMatches: function () { return "No matches found"; },
+        formatCreateNew: function () { return "Create item"; },
         formatInputTooShort: function (input, min) { return "Please enter " + (min - input.length) + " more characters"; },
         formatSelectionTooBig: function (limit) { return "You can only select " + limit + " item" + (limit == 1 ? "" : "s"); },
         formatLoadMore: function (pageNumber) { return "Loading more results..."; },
@@ -2385,7 +2402,8 @@
             }
             return markup;
         },
-        blurOnChange: false
+        blurOnChange: false,
+        createNew: false
     };
 
     // exports
