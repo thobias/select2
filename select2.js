@@ -1269,6 +1269,11 @@
                 results.empty();
                 self.opts.populateResults.call(this, results, data.results, {term: search.val(), page: this.resultsPage, context:null});
 
+                if (opts.createButton) {
+                  results.append("<li class='select2-create-new'>" + opts.formatCreateNew(search.val()) + "</li>");
+                  $('.select2-create-new').off('click.new').on('click.new', triggerNoMatchesCallback);
+                }
+
                 if (data.more === true && checkFormatter(opts.formatLoadMore, "formatLoadMore")) {
                     results.append("<li class='select2-more-results'>" + self.opts.escapeMarkup(opts.formatLoadMore(this.resultsPage)) + "</li>");
                     window.setTimeout(function() { self.loadMoreIfNeeded(); }, 10);
@@ -2403,7 +2408,8 @@
             return markup;
         },
         blurOnChange: false,
-        createNew: false
+        createNew: false,
+        createButton: false
     };
 
     // exports
